@@ -1,6 +1,6 @@
 cabal-version:      3.0
 name:               agda-lint
-version:            0.1.0
+version:            0.1.1
 synopsis:           Configurable style linter for Agda
 description:
   A naive linter for Agda sources, with fixable rules, a TOML config,

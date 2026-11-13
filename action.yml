@@ -17,6 +17,15 @@ inputs:
   fail-on:
     description: fail the step on error, warning or never
     default: error
+  reviewdog:
+    description: report through reviewdog with this reporter, such as github-pr-review or github-pr-check, instead of annotations
+    default: ""
+  filter-mode:
+    description: reviewdog filter mode, added, diff_context, file or nofilter
+    default: added
+  token:
+    description: token for reviewdog
+    default: ${{ github.token }}
   working-directory:
     description: project root
     default: "."
@@ -114,6 +123,10 @@ runs:
           ${{ inputs.working-directory }}/${{ inputs.project }}/dist-newstyle
         key: ${{ steps.cabal.outputs.cache-primary-key }}
 
+    - name: Setup reviewdog
+      if: inputs.reviewdog != ''
+      uses: reviewdog/action-setup@v1
+
     - name: Lint
       shell: bash
       working-directory: ${{ inputs.working-directory }}
@@ -121,8 +134,26 @@ runs:
         CONFIG: ${{ inputs.config }}
         FAIL_ON: ${{ inputs.fail-on }}
         ARGS: ${{ inputs.args }}
+        REPORTER: ${{ inputs.reviewdog }}
+        FILTER_MODE: ${{ inputs.filter-mode }}
+        REVIEWDOG_GITHUB_API_TOKEN: ${{ inputs.token }}
       run: |
-        set -- --format github --fail-on "$FAIL_ON"
+        # pull request reporters have nothing to report on elsewhere
+        case "$REPORTER:$GITHUB_EVENT_NAME" in
+          github-pr-*:pull_request | github-pr-*:pull_request_target) ;;
+          github-pr-*) REPORTER= ;;
+        esac
+        set -- --fail-on "$FAIL_ON"
         if [ -n "$CONFIG" ]; then set -- "$@" --config "$CONFIG"; fi
+        if [ -z "$REPORTER" ]; then
+          # shellcheck disable=SC2086
+          exec agda-lint --format github "$@" $ARGS
+        fi
+        code=0
         # shellcheck disable=SC2086
-        agda-lint "$@" $ARGS
+        agda-lint "$@" $ARGS > "$RUNNER_TEMP/agda-lint.txt" || code=$?
+        cat "$RUNNER_TEMP/agda-lint.txt"
+        if [ "$code" -gt 1 ]; then exit "$code"; fi
+        reviewdog -name=agda-lint -reporter="$REPORTER" -filter-mode="$FILTER_MODE" -fail-level=none \
+          -efm="%f:%l:%c: %trror %m" -efm="%f:%l:%c: %tarning %m" < "$RUNNER_TEMP/agda-lint.txt"
+        exit "$code"

@@ -157,7 +157,7 @@ packages: .
 source-repository-package
   type: git
   location: https://github.com/vikraman/agda-lint
-  tag: v0.1.0
+  tag: v0.1.1
 ```
 
 `lint/Lint.hs`:
@@ -198,7 +198,7 @@ analysis the built-in rules use are in `AgdaLint.Source`, the lexer in
 
 ```yaml
 - uses: actions/checkout@v7
-- uses: vikraman/agda-lint@v0.1.0
+- uses: vikraman/agda-lint@v0.1.1
 ```
 
 Findings will be annotated on the pull request diff. The action runs the release
@@ -210,10 +210,30 @@ it is tagged with; on a branch or commit it runs the latest.
 | `config`            | `agda-lint.toml` | config file                                                    |
 | `args`              |                  | extra arguments, such as paths                                 |
 | `fail-on`           | `error`          | `error`, `warning` or `never`                                  |
+| `reviewdog`         |                  | reviewdog reporter to use instead of annotations               |
+| `filter-mode`       | `added`          | reviewdog filter mode                                          |
+| `token`             | `github.token`   | token for reviewdog                                            |
 | `working-directory` | `.`              | project root                                                   |
 | `project`           |                  | cabal project with project rules, built instead of downloading |
 | `executable`        | `lint`           | executable of that project                                     |
 | `ghc-version`       | `9.14.1`         | GHC to build it with                                           |
+
+To comment only on the lines a pull request adds, report through
+[reviewdog](https://github.com/reviewdog/reviewdog):
+
+```yaml
+permissions:
+  contents: read
+  pull-requests: write
+
+steps:
+  - uses: actions/checkout@v7
+  - uses: vikraman/agda-lint@v0.1.1
+    with:
+      reviewdog: github-pr-review
+```
+
+Outside pull requests, a `github-pr-*` reporter falls back to annotations.
 
 ## Development
 
