@@ -1,0 +1,128 @@
+name: agda-lint
+description: Lint Agda sources with agda-lint and annotate the findings
+branding:
+  icon: check-circle
+  color: purple
+
+inputs:
+  version:
+    description: release to download, such as v0.1.0 or latest; defaults to the tag the action is used at, or latest for a branch or commit
+    default: ""
+  config:
+    description: config file, agda-lint.toml in the working directory if empty
+    default: ""
+  args:
+    description: extra arguments, such as paths to lint
+    default: ""
+  fail-on:
+    description: fail the step on error, warning or never
+    default: error
+  working-directory:
+    description: project root
+    default: "."
+  project:
+    description: directory of a cabal project with project rules, built and run instead of the released binary, relative to the working directory
+    default: ""
+  executable:
+    description: executable of that cabal project
+    default: lint
+  ghc-version:
+    description: ghc used to build the project
+    default: "9.14.1"
+
+runs:
+  using: composite
+  steps:
+    - name: Install agda-lint
+      if: inputs.project == ''
+      shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
+      run: |
+        case "$RUNNER_OS-$RUNNER_ARCH" in
+          Linux-X64) asset=agda-lint-linux-x86_64 ;;
+          Linux-ARM64) asset=agda-lint-linux-arm64 ;;
+          macOS-ARM64) asset=agda-lint-macos-arm64 ;;
+          *)
+            echo "::error::no agda-lint binary for $RUNNER_OS $RUNNER_ARCH"
+            exit 1
+            ;;
+        esac
+        # the action is checked out in a directory named after its ref
+        ref=$(basename "$GITHUB_ACTION_PATH")
+        if [ -z "$VERSION" ]; then
+          case "$ref" in
+            v[0-9]*.[0-9]*.[0-9]*) VERSION=$ref ;;
+            *) VERSION=latest ;;
+          esac
+        fi
+        repo=https://github.com/vikraman/agda-lint
+        if [ "$VERSION" = latest ]; then
+          url="$repo/releases/latest/download"
+        else
+          url="$repo/releases/download/$VERSION"
+        fi
+        mkdir -p "$RUNNER_TEMP/agda-lint"
+        cd "$RUNNER_TEMP" || exit 1
+        for file in "$asset.tar.gz" SHA256SUMS; do
+          if ! curl -fsSL --retry 3 "$url/$file" -o "$file"; then
+            echo "::error::could not download $url/$file"
+            exit 1
+          fi
+        done
+        grep " $asset.tar.gz\$" SHA256SUMS | shasum -a 256 -c -
+        tar -xzf "$asset.tar.gz" -C agda-lint
+        echo "$RUNNER_TEMP/agda-lint" >> "$GITHUB_PATH"
+        "$RUNNER_TEMP/agda-lint/agda-lint" --version
+
+    - name: Setup Haskell
+      if: inputs.project != ''
+      id: haskell
+      uses: haskell-actions/setup@v2
+      with:
+        ghc-version: ${{ inputs.ghc-version }}
+
+    - name: Restore cabal
+      if: inputs.project != ''
+      id: cabal
+      uses: actions/cache/restore@v6
+      with:
+        path: |
+          ${{ steps.haskell.outputs.cabal-store }}
+          ${{ inputs.working-directory }}/${{ inputs.project }}/dist-newstyle
+        key: ${{ runner.os }}-${{ runner.arch }}-ghc-${{ inputs.ghc-version }}-agda-lint-${{ hashFiles(format('{0}/{1}/**/*.hs', inputs.working-directory, inputs.project), format('{0}/{1}/**/*.cabal', inputs.working-directory, inputs.project), format('{0}/{1}/cabal.project*', inputs.working-directory, inputs.project), format('!{0}/{1}/dist-newstyle/**', inputs.working-directory, inputs.project)) }}
+        restore-keys: ${{ runner.os }}-${{ runner.arch }}-ghc-${{ inputs.ghc-version }}-agda-lint-
+
+    - name: Build linter
+      if: inputs.project != ''
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}/${{ inputs.project }}
+      env:
+        EXECUTABLE: ${{ inputs.executable }}
+      run: |
+        cabal build "exe:$EXECUTABLE"
+        mkdir -p "$RUNNER_TEMP/agda-lint"
+        cp "$(cabal list-bin "exe:$EXECUTABLE")" "$RUNNER_TEMP/agda-lint/agda-lint"
+        echo "$RUNNER_TEMP/agda-lint" >> "$GITHUB_PATH"
+
+    - name: Save cabal
+      if: inputs.project != '' && steps.cabal.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: |
+          ${{ steps.haskell.outputs.cabal-store }}
+          ${{ inputs.working-directory }}/${{ inputs.project }}/dist-newstyle
+        key: ${{ steps.cabal.outputs.cache-primary-key }}
+
+    - name: Lint
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        CONFIG: ${{ inputs.config }}
+        FAIL_ON: ${{ inputs.fail-on }}
+        ARGS: ${{ inputs.args }}
+      run: |
+        set -- --format github --fail-on "$FAIL_ON"
+        if [ -n "$CONFIG" ]; then set -- "$@" --config "$CONFIG"; fi
+        # shellcheck disable=SC2086
+        agda-lint "$@" $ARGS

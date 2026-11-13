@@ -1,0 +1,93 @@
+cabal-version:      3.0
+name:               agda-lint
+version:            0.1.0
+synopsis:           Configurable style linter for Agda
+description:
+  A naive linter for Agda sources, with fixable rules, a TOML config,
+  and a library for writing project-specific rules.
+
+license:            MIT
+license-file:       LICENSE
+author:             Vikraman Choudhury
+maintainer:         git@vikraman.org
+category:           Development
+build-type:         Simple
+extra-doc-files:    README.md
+extra-source-files:
+  test/fixtures/**/*.agda
+  test/fixtures/**/*.fixed
+  test/fixtures/**/*.lagda
+  test/fixtures/**/*.md
+  test/fixtures/**/*.toml
+  test/fixtures/**/*.txt
+
+source-repository head
+  type:     git
+  location: https://github.com/vikraman/agda-lint
+
+common shared
+  default-language:   GHC2024
+  default-extensions:
+    DuplicateRecordFields
+    OverloadedStrings
+
+  ghc-options:        -Wall -Wextra -Wcompat
+  build-depends:
+    , base  >=4.20  && <5
+    , text  >=2.1.2 && <2.2
+
+library
+  import:          shared
+  hs-source-dirs:  src
+  exposed-modules:
+    AgdaLint
+    AgdaLint.Allow
+    AgdaLint.Config
+    AgdaLint.Fix
+    AgdaLint.Lexer
+    AgdaLint.Main
+    AgdaLint.Pattern
+    AgdaLint.Project
+    AgdaLint.Report
+    AgdaLint.Rule
+    AgdaLint.Rules
+    AgdaLint.Rules.Naming
+    AgdaLint.Rules.Style
+    AgdaLint.Run
+    AgdaLint.Source
+    AgdaLint.Types
+
+  other-modules:   Paths_agda_lint
+  autogen-modules: Paths_agda_lint
+  build-depends:
+    , containers            >=0.7  && <0.9
+    , directory             >=1.3.8 && <1.4
+    , filepath              >=1.5  && <1.6
+    , generic-data          >=1.1  && <1.2
+    , Glob                  >=0.10 && <0.11
+    , megaparsec            >=9.7  && <9.9
+    , optparse-applicative  >=0.18 && <0.20
+    , regex-tdfa            >=1.3.2 && <1.4
+    , toml-parser           >=2.0  && <2.1
+
+executable agda-lint
+  import:         shared
+  hs-source-dirs: app
+  main-is:        Main.hs
+  build-depends:  agda-lint
+
+test-suite test
+  import:         shared
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is:        Main.hs
+  build-tool-depends: agda-lint:agda-lint
+  build-depends:
+    , agda-lint
+    , bytestring
+    , directory
+    , filepath
+    , process
+    , tasty        >=1.5  && <1.6
+    , toml-parser
+    , tasty-hunit  >=0.10 && <0.11

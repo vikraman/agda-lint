@@ -1,0 +1,44 @@
+Bad.agda:1:1: warning [moduleBlankLine] put a single blank line after the module header
+Bad.agda:3:1: warning [importOrder] Data.Bool should come before Data.Nat
+Bad.agda:4:1: warning [importPublic] import without public and open it publicly later
+Bad.agda:7:1: warning [sectionHeader] title should be lowercase: Section Title
+Bad.agda:9:1: warning [stackedPrivate] put private and variable on separate lines
+Bad.agda:11:3: warning [unusedVariable] unused is declared but never used
+Bad.agda:14:3: error [bannedName] use `𝟙 instead of `Unit
+Bad.agda:17:12: error [asciiArrow] use → instead of ->
+Bad.agda:18:3: error [bannedName] trustMe is not allowed
+Bad.agda:22:8: error [asciiArrow] use → instead of ->
+Bad.agda:23:6: error [asciiLambda] use λ instead of \
+Bad.agda:23:9: error [asciiArrow] use → instead of ->
+Bad.agda:23:13: warning [trailingWhitespace] trailing whitespace
+Bad.agda:26:5: error [asciiSubscript] use x₁ instead of x1
+Bad.agda:26:12: error [asciiSubscript] use x₁ instead of x1
+Bad.agda:29:7: error [prime] no primes on variables: a'
+Bad.agda:29:12: error [prime] no primes on variables: a'
+Bad.agda:31:1: warning [asciiPrime] use ′ instead of ' in name'
+Bad.agda:32:1: warning [asciiPrime] use ′ instead of ' in name'
+Bad.agda:35:9: error [patternLambda] use a pattern-matching lambda: λ { (…) → … }
+Bad.agda:37:17: warning [sortLetter] M : Val X should be one of V W
+Bad.agda:37:21: error [prefixType] use the syntax form: ⟦ X ⟧
+Bad.agda:37:29: error [reservedLetter] Y is reserved for Ty, but has type A
+Bad.agda:37:38: error [prefixType] use the syntax form: ⟦ X ⟧
+Bad.agda:41:1: warning [unneededSubscript] M₁ is the only M here; use M
+Bad.agda:44:1: warning [pairSubscript] M M₁: use M and N
+Bad.agda:46:1: warning [missingFixity] _+_ has no fixity declaration
+Bad.agda:47:9: warning [letBinding] prefer a where block to let
+Bad.agda:47:24: warning [trailingComment] put the comment above the term
+Bad.agda:49:61: error [lineLength] line is 64 characters (limit 60)
+Bad.agda:52:8: warning [unicodeInstance] use {{ }} instead of ⦃ ⦄
+Bad.agda:52:16: warning [unicodeInstance] use {{ }} instead of ⦃ ⦄
+Bad.agda:53:6: warning [unicodeInstance] use {{ }} instead of ⦃ ⦄
+Bad.agda:53:10: warning [unicodeInstance] use {{ }} instead of ⦃ ⦄
+Bad.agda:56:9: warning [whereLayout] put where on its own line below the clause
+Bad.agda:59:19: warning [rewriteName] bar is a rewrite rule; end its name in one of -β
+Bad.agda:60:1: warning [tab] tab character
+More.agda:3:1: warning [importModifierOrder] modifiers go in the order public, using, renaming
+More.agda:3:53: warning [botElim] prefer contradiction to ⊥-elim
+More.agda:5:1: warning [mutualBlock] mutual blocks are obsolete; put signatures before definitions
+More.agda:7:5: warning [leadingArrow] put → at the end of the previous line
+More.agda:9:3: warning [withAlignment] write ... | without aligning the |
+More.agda:9:16: warning [botElim] prefer contradiction to ⊥-elim
+More.agda:12:3: warning [beginSameLine] put begin on the line with the proof it starts

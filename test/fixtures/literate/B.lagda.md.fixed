@@ -1,0 +1,15 @@
+# Title -> arrow
+
+```agda
+module B where
+
+f : Set → Set
+```
+
+```haskell
+f :: a -> a
+```
+
+```
+g : Set → Set
+```

@@ -1,0 +1,48 @@
+# agda-lint config
+
+sources = ["src/**/*.agda", "src/**/*.lagda.md"]
+exclude = ["_build/**"]
+
+# replaced by --fix
+fixBannedNames = ["⊥-elim"]
+
+# core: a small default set; all: every rule at its recommended level
+preset = "core"
+
+# rule levels: error, warning, off
+[rules]
+letBinding = "warning"
+lineLength = "warning"
+tab = "error"
+
+# findings that are intended: path glob, or path glob:line
+[allow]
+importOrder = ["src/Everything.agda"]
+asciiArrow = ["src/Syntax.agda:12"]
+
+[style]
+lineLength = 80
+sectionWidth = 72
+sectionTitle = "sentence"
+
+# name = replacement, or "" to only report
+[bannedNames]
+"⊥-elim" = "contradiction"
+
+# letters by sort
+[[sorts]]
+exact = ["Ctx"]
+letters = "ΓΔ"
+
+# rules without code
+[[pattern]]
+name = "noTodo"
+regex = "TODO|FIXME"
+scope = "line"
+message = "resolve before merging"
+
+[[pattern]]
+name = "doubleStruckNat"
+level = "error"
+token = "Nat"
+replace = "ℕ"

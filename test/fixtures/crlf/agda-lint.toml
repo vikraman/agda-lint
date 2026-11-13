@@ -1,0 +1,5 @@
+[rules]
+moduleBlankLine = "warning"
+lineLength = "warning"
+[style]
+lineLength = 14

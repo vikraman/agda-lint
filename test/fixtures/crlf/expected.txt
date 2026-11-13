@@ -1,0 +1,6 @@
+A.agda:1:1: warning [moduleBlankLine] put a single blank line after the module header
+A.agda:5:9: error [asciiArrow] use → instead of ->
+A.agda:5:15: warning [lineLength] line is 16 characters (limit 14)
+A.agda:5:15: warning [trailingWhitespace] trailing whitespace
+A.agda:6:5: error [asciiLambda] use λ instead of \
+A.agda:6:8: error [asciiArrow] use → instead of ->

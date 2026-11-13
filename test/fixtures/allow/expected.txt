@@ -1,0 +1,5 @@
+A.agda:4:5: error [asciiLambda] use λ instead of \
+A.agda:4:8: error [asciiArrow] use → instead of ->
+A.agda:5:9: error [asciiArrow] use → instead of ->
+Sub/B.agda:3:9: error [asciiArrow] use → instead of ->
+Sub/B.agda:4:8: error [asciiArrow] use → instead of ->

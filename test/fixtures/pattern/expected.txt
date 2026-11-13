@@ -1,0 +1,7 @@
+Bad.agda:3:1: warning [noPostulate] no postulates
+Bad.agda:4:3: error [doubleStruck] use ℕ instead of Nat
+Bad.agda:5:3: warning [bracketNames] no semantic brackets in names
+Bad.agda:7:6: error [noTodo] TODO is not allowed
+Bad.agda:7:17: error [noTodo] FIXME is not allowed
+Bad.agda:8:5: error [doubleStruck] use ℕ instead of Nat
+Bad.agda:8:14: warning [times] use × instead of *

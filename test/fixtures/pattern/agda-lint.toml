@@ -1,0 +1,28 @@
+[rules]
+noTodo = "error"
+
+[[pattern]]
+name = "noPostulate"
+token = "postulate"
+message = "no postulates"
+
+[[pattern]]
+name = "doubleStruck"
+level = "error"
+token = "Nat"
+replace = "ℕ"
+
+[[pattern]]
+name = "noTodo"
+regex = "TODO|FIXME"
+scope = "line"
+
+[[pattern]]
+name = "bracketNames"
+regex = "^⟦.*⟧$"
+message = "no semantic brackets in names"
+
+[[pattern]]
+name = "times"
+regex = "\\*"
+replace = "×"

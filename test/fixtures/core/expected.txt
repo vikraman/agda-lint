@@ -1,0 +1,9 @@
+Bad.agda:4:1: warning [importOrder] A should come before B
+Bad.agda:6:9: error [asciiArrow] use → instead of ->
+Bad.agda:7:5: error [asciiLambda] use λ instead of \
+Bad.agda:7:8: error [asciiArrow] use → instead of ->
+Bad.agda:7:25: warning [trailingWhitespace] trailing whitespace
+Bad.agda:11:5: error [asciiLambda] use λ instead of \
+Bad.agda:11:8: error [asciiArrow] use → instead of ->
+Bad.agda:11:11: error [asciiLambda] use λ instead of \
+Bad.agda:11:20: error [asciiArrow] use → instead of ->

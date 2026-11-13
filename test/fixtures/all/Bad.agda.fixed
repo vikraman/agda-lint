@@ -1,0 +1,61 @@
+module Bad where
+
+open import Data.Nat
+open import Data.Bool
+open import Data.Empty public using (⊥)
+
+--------------------
+-- Section Title
+
+private variable
+  A B : Set
+  unused : Set
+
+data Ty : Set where
+  `𝟙 : Ty
+
+postulate
+  Val : Ty → Set
+  trustMe : A
+
+syntax Val X = ⟦ X ⟧
+
+id : A → A
+id = λ x → x
+
+fst : A → B → A
+fst x₁ y = x₁
+
+prime : A → A
+prime a' = a'
+
+name′ : A → A
+name′ a = a
+
+pat : A → B → A
+pat = λ (x) y → x
+
+val : (X : Ty) (M : ⟦ X ⟧) (Y : A) → ⟦ X ⟧
+val X M Y = M
+
+sub : A → A
+sub M₁ = M₁
+
+pair : A → A → A
+pair M M₁ = M
+
+_+_ : A → A → A
+x + y = let z = x in z -- comment
+
+long : A → A → A → A → A → A → A → A → A → A → A → A → A → A → A
+long a b c d e f g h i j k l m n = a
+
+inst : {{ x : A }} → A
+inst {{ x }} = x
+
+w : A → A
+w x = y where
+  y = x
+
+{-# REWRITE foo-β bar #-}
+	tab : A

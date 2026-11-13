@@ -1,0 +1,6 @@
+A.lagda:6:9: error [asciiArrow] use → instead of ->
+A.lagda:6:15: warning [trailingWhitespace] trailing whitespace
+A.lagda:13:5: error [asciiLambda] use λ instead of \
+A.lagda:13:8: error [asciiArrow] use → instead of ->
+B.lagda.md:6:9: error [asciiArrow] use → instead of ->
+B.lagda.md:14:9: error [asciiArrow] use → instead of ->

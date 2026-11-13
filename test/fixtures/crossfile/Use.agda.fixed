@@ -1,0 +1,6 @@
+module Use where
+
+open import Lib.Syntax
+
+f : ⟦ A ⟧ → ⟦ B ⟧
+f x = x

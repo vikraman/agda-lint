@@ -1,0 +1,26 @@
+preset = "all"
+
+fixBannedNames = ["`Unit"]
+pairs = ["MN"]
+rewriteSuffixes = ["-β"]
+
+[rules]
+lineLength = "error"
+
+[style]
+lineLength = 60
+sectionWidth = 20
+sectionTitle = "lower"
+
+[bannedNames]
+"`Unit" = "`𝟙"
+"trustMe" = ""
+
+[[sorts]]
+heads = ["Val"]
+letters = "VW"
+
+[[sorts]]
+exact = ["Ty"]
+letters = "XY"
+reserved = true

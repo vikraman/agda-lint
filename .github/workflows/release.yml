@@ -1,0 +1,86 @@
+name: release
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+*"]
+
+permissions:
+  contents: read
+
+env:
+  GHC_VERSION: "9.14.1"
+  MACOSX_DEPLOYMENT_TARGET: "13.0"
+
+jobs:
+  build:
+    name: build (${{ matrix.asset }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            asset: agda-lint-linux-x86_64
+          - os: ubuntu-22.04-arm
+            asset: agda-lint-linux-arm64
+          - os: macos-latest
+            asset: agda-lint-macos-arm64
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Haskell
+        uses: haskell-actions/setup@v2
+        with:
+          ghc-version: ${{ env.GHC_VERSION }}
+
+      - name: Test
+        run: cabal test
+
+      - name: Build
+        env:
+          ASSET: ${{ matrix.asset }}
+        run: |
+          cabal build exe:agda-lint
+          cp "$(cabal list-bin exe:agda-lint)" agda-lint
+          strip agda-lint
+          test "v$(./agda-lint --version)" = "$GITHUB_REF_NAME"
+          tar -czf "$ASSET.tar.gz" agda-lint
+
+      - name: Upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.asset }}
+          path: ${{ matrix.asset }}.tar.gz
+          if-no-files-found: error
+
+  # published only once every binary is built
+  publish:
+    name: publish
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download
+        uses: actions/download-artifact@v8
+        with:
+          merge-multiple: true
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          shasum -a 256 -- *.tar.gz > SHA256SUMS
+          case "$GITHUB_REF_NAME" in
+            *-*) pre=--prerelease ;;
+            *) pre= ;;
+          esac
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" ./*.tar.gz SHA256SUMS --clobber
+          else
+            # shellcheck disable=SC2086
+            gh release create "$GITHUB_REF_NAME" ./*.tar.gz SHA256SUMS --verify-tag --generate-notes $pre
+          fi

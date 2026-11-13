@@ -1,0 +1,3 @@
+[allow]
+asciiArrow = ["A.agda:3"]
+asciiLambda = ["Sub/*.agda"]

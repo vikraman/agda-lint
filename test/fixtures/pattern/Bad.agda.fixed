@@ -1,0 +1,9 @@
+module Bad where
+
+postulate
+  ℕ : Set
+  ⟦Nat⟧ : Set
+
+-- λ TODO: fix, FIXME
+f : ℕ → Nat×Nat
+s = "Nat"
